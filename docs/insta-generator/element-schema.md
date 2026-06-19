@@ -87,7 +87,7 @@
 "background": { "color": "#0F1F3D" }                 // 다크 슬라이드
 "background": { "image": { "url": "...", "fit": "cover", "dim": 0.3, "blur": 0 } }  // 이미지(보조)
 ```
-- 엉클비 톤은 **단색 연블루이 기본**. 다크 슬라이드는 `#0F1F3D`/`#17233E`.
+- 엉클비 톤은 **단색 연블루가 기본**. 다크 슬라이드는 `#0F1F3D`/`#17233E`.
 - 명암: 라이트 배경엔 진한 글자(`#17233E`), 다크 배경엔 밝은 글자(`#FFFFFF`/`#DCE6FA`).
 
 ---
@@ -172,7 +172,7 @@
 }
 ```
 
-### (B) 본문
+### (B) 본문 + 캐릭터
 ```json
 {
   "background": { "color": "#EEF3FC" },
@@ -183,6 +183,7 @@
     { "kind": "text", "x": 96, "y": 360, "w": 640, "text": "굵은 헤드라인", "size": 116, "weight": 900, "color": "#17233E", "lineHeight": 1.06 },
     { "kind": "text", "x": 96, "y": 488, "w": 640, "text": "강조 한 줄.", "size": 116, "weight": 900, "color": "#2F6BFF", "lineHeight": 1.06 },
     { "kind": "text", "x": 96, "y": 700, "w": 600, "text": "본문 2~3문장.\n줄바꿈으로 의미 단위를 끊어요.\n읽기 좋게.", "size": 36, "weight": 500, "color": "#56627D", "lineHeight": 1.5 },
+    { "kind": "image", "x": 712, "y": 600, "w": 322, "h": 560, "url": "/assets/characters/uncleb-present.png", "fit": "contain" },
     { "kind": "text", "x": 96, "y": 1130, "w": 500, "text": "swipe to read →", "size": 28, "weight": 600, "italic": true, "color": "#2F6BFF" },
     { "kind": "text", "x": 96, "y": 1262, "w": 520, "text": "@uncleb_studio", "size": 30, "weight": 700, "color": "#7686A6" },
     { "kind": "text", "x": 564, "y": 1262, "w": 420, "text": "unclebstudio.com", "size": 30, "weight": 400, "color": "#7686A6", "align": "right" }

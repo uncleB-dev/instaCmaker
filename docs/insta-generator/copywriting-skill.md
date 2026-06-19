@@ -79,6 +79,7 @@
   - 본문: `size` 32~40, `weight` 500, 블루그레이/네이비, `lineHeight` 1.4~1.5.
   - 영문 강조 라벨엔 `fontFamily:"display"`(이탤릭 세리프), 코드/프롬프트엔 `"mono"`.
 - **반복 요소**: 우상단 페이지 인디케이터(`01 — 06`), 배경 거대 워터마크 숫자(`#DEE8FB`, 맨 뒤 레이어), 좌하단 핸들 `@uncleb_studio` + 우하단 `unclebstudio.com` 푸터, 다음 유도 "swipe to read →"(블루 이탤릭).
+- **캐릭터**: 본문·CTA 슬라이드의 빈 쪽(보통 우하단)에 엉클비 캐릭터(§6)를 `image`(`fit:"contain"`, 높이 ~600) 1개로 넣어 생동감. 한 캐러셀에 1~3개만, 톤 튀지 않게.
 - **컴포넌트 레시피**:
   - 비교 카드 = `roundRect`(라이트 `#DCE7FB` / 다크 `#0F1F3D`) + 제목 + 본문.
   - 프롬프트 박스 = `roundRect`(`#0F1F3D`, radius 28) + "PROMPT" 라벨(블루) + mono 본문(`#DCE6FA`).

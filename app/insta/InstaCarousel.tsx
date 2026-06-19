@@ -427,16 +427,17 @@ function buildTemplates(): Template[] {
     },
     {
       id: "tpl-body",
-      name: "본문",
+      name: "본문 + 캐릭터",
       slide: {
         id: uid("sl"),
         background: { color: PAPER },
         elements: [
           newText({ x: 540, y: 300, w: 520, text: "02", size: 420, weight: 900, color: "#DEE8FB" }),
           ...meta("HOW I STARTED", "02 — 09"),
-          newText({ x: 96, y: 360, w: 880, text: "뒤처지기", size: 116, weight: 900, color: NAVY, lineHeight: 1.06 }),
-          newText({ x: 96, y: 488, w: 880, text: "싫었어.", size: 116, weight: 900, color: ACCENT, lineHeight: 1.06 }),
-          newText({ x: 96, y: 720, w: 880, text: "회사에서 살아남아야 했고,\n1% 확률이라도 잡고 싶었거든.\n그래서 시작했어.", size: 38, weight: 500, color: "#56627D", lineHeight: 1.5 }),
+          newText({ x: 96, y: 360, w: 640, text: "뒤처지기", size: 116, weight: 900, color: NAVY, lineHeight: 1.06 }),
+          newText({ x: 96, y: 488, w: 640, text: "싫었어.", size: 116, weight: 900, color: ACCENT, lineHeight: 1.06 }),
+          newText({ x: 96, y: 700, w: 600, text: "회사에서 살아남아야 했고,\n1% 확률이라도 잡고 싶었거든.\n그래서 시작했어.", size: 36, weight: 500, color: "#56627D", lineHeight: 1.5 }),
+          { id: uid("i"), kind: "image", x: 712, y: 600, w: 322, h: 560, url: "/assets/characters/uncleb-present.png", fit: "contain", radius: 0 } as ImageEl,
           newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: ACCENT }),
           ...footer(),
         ],
