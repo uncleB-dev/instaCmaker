@@ -22,7 +22,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { toBlob } from "html-to-image";
+import { toBlob, getFontEmbedCSS } from "html-to-image";
 import JSZip from "jszip";
 import { compressImage } from "@/lib/image-compress";
 import styles from "./insta.module.css";
@@ -824,12 +824,15 @@ export function InstaCarousel() {
     [],
   );
 
-  const captureNode = useCallback(async (node: HTMLDivElement): Promise<Blob> => {
-    await ensureImagesDecoded(node);
-    const blob = await toBlob(node, CAPTURE_OPTS);
-    if (!blob) throw new Error("이미지 변환 실패 (빈 Blob)");
-    return blob;
-  }, []);
+  const captureNode = useCallback(
+    async (node: HTMLDivElement, fontEmbedCSS?: string): Promise<Blob> => {
+      await ensureImagesDecoded(node);
+      const blob = await toBlob(node, fontEmbedCSS ? { ...CAPTURE_OPTS, fontEmbedCSS } : CAPTURE_OPTS);
+      if (!blob) throw new Error("이미지 변환 실패 (빈 Blob)");
+      return blob;
+    },
+    [],
+  );
 
   const downloadOne = useCallback(
     async (id: string, position: number) => {
@@ -840,7 +843,8 @@ export function InstaCarousel() {
       setStatus(`생성 중… (${pad2(position)})`);
       try {
         await document.fonts.ready;
-        const blob = await captureNode(node);
+        const fontEmbedCSS = await getFontEmbedCSS(node).catch(() => undefined);
+        const blob = await captureNode(node, fontEmbedCSS);
         downloadBlob(blob, `insta-${pad2(position)}.png`);
         setStatus(`완료: insta-${pad2(position)}.png`);
       } catch (e) {
@@ -861,12 +865,14 @@ export function InstaCarousel() {
     setStatus("생성 중… (전체 ZIP)");
     try {
       await document.fonts.ready;
+      const first = slideRefs.current.get(project.slides[0].id);
+      const fontEmbedCSS = first ? await getFontEmbedCSS(first).catch(() => undefined) : undefined;
       const zip = new JSZip();
       for (let i = 0; i < project.slides.length; i++) {
         const node = slideRefs.current.get(project.slides[i].id);
         if (!node) throw new Error(`슬라이드 ${i + 1} 노드를 찾을 수 없어요.`);
         setStatus(`생성 중… (${pad2(i + 1)}/${project.slides.length})`);
-        const blob = await captureNode(node);
+        const blob = await captureNode(node, fontEmbedCSS);
         zip.file(`insta-${pad2(i + 1)}.png`, blob);
       }
       setStatus("압축 중…");

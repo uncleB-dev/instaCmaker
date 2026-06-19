@@ -16,9 +16,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        {/* Pretendard (가변 폰트) — 기본 산세리프 */}
+        {/* Pretendard (가변 폰트) — 기본 산세리프. crossOrigin: html-to-image가 PNG에 폰트 임베드하려면 필요 */}
         <link
           rel="stylesheet"
+          crossOrigin="anonymous"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
         />
         {/* 캔버스 폰트 — 세리프 / 이탤릭 세리프 / 모노 / 손글씨 (Google Fonts) */}
@@ -26,6 +27,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
+          crossOrigin="anonymous"
           href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600;1,800&family=JetBrains+Mono:wght@400;700&family=Gaegu:wght@400;700&display=swap"
         />
       </head>
