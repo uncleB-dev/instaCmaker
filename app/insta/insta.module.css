@@ -1,0 +1,1946 @@
+/*
+ * /insta — 관리자 전용 인스타 캐러셀 생성기
+ *
+ * 두 영역:
+ *  1) 관리자 크롬(.page …) — EYEshare 다크 테마.
+ *  2) 슬라이드(.slide …)   — 깔끔한 한국형 인스타 캐러셀 디자인 시스템.
+ *
+ * 슬라이드는 PNG로 캡처(1080×1350)되므로 px 고정값을 그대로 쓴다.
+ */
+
+/* ============================================================
+   1) 관리자 크롬 (EYEshare 다크)
+   ============================================================ */
+.page {
+  --bg: #18181b;
+  --surface: #27272a;
+  --surface-2: #2e2e33;
+  --inset: #131316;
+  --ink: #fafafa;
+  --ink-2: #a1a1aa;
+  --ink-3: #71717a;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --brand: #6c5ce7;
+  --brand-strong: #5a4bd6;
+  --brand-soft: rgba(108, 92, 231, 0.16);
+  --hover: rgba(255, 255, 255, 0.04);
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard Variable", Pretendard, system-ui, -apple-system,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 32px;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.adminBadge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border: 1px solid rgba(108, 92, 231, 0.35);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+
+.input {
+  width: 240px;
+  max-width: 100%;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.input::placeholder {
+  color: var(--ink-3);
+}
+.input:hover {
+  border-color: var(--line-strong);
+}
+.input:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 11px 18px;
+  transition: background 160ms ease, transform 120ms ease;
+}
+.btnPrimary:hover {
+  background: var(--brand-strong);
+}
+.btnPrimary:active {
+  transform: translateY(1px);
+}
+.btnPrimary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btnPrimary:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.status {
+  font-size: 13px;
+  color: var(--ink-2);
+  min-height: 18px;
+}
+.statusError {
+  color: #f87171;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 4px 0 22px;
+}
+
+/* ============================================================
+   구성 불러오기 / 내보내기 (collapsible) — 컨트롤 영역, 다크 크롬 재사용
+   ============================================================ */
+.configPanel {
+  flex: 1 1 100%;
+  min-width: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: 2px;
+}
+.configSummary {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  list-style: none;
+  padding: 2px 0;
+  user-select: none;
+  transition: color 160ms ease;
+}
+.configSummary::-webkit-details-marker {
+  display: none;
+}
+.configSummary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--ink-3);
+  transition: transform 160ms ease;
+}
+.configPanel[open] > .configSummary::before {
+  transform: rotate(90deg);
+}
+.configSummary:hover {
+  color: var(--ink);
+}
+.configSummary:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.configBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  max-width: 720px;
+}
+.configTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo,
+    Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 120px;
+}
+.configActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.configHint {
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 미리보기 그리드 */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.cellHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 340px;
+  max-width: 100%;
+}
+
+.cellLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.btnGhost:hover {
+  background: var(--hover);
+  border-color: var(--line-strong);
+}
+.btnGhost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btnGhost:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* 미리보기 박스 — .slide(1080×1350)를 축소해 보여준다. */
+.previewBox {
+  width: 340px;
+  height: 425px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #000;
+}
+.scaler {
+  width: 1080px;
+  height: 1350px;
+  transform: scale(0.3148);
+  transform-origin: top left;
+}
+
+/* 캡처 무대 — 화면 밖(접근성 트리 유지하되 시각적으로 숨김). */
+.captureStage {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 1080px;
+  /* 슬라이드들이 세로로 쌓여도 무방 — 각 노드를 개별 캡처 */
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* ============================================================
+   2) 슬라이드 디자인 시스템 (1080×1350 캡처용)
+   ============================================================ */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  font-family: "Pretendard Variable", Pretendard, system-ui, -apple-system,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background: #ffffff;
+  color: #1b1b22;
+  -webkit-font-smoothing: antialiased;
+}
+
+.slideCover {
+  background: linear-gradient(180deg, #cfcfda 0%, #9a9aa8 32%, #15151a 100%);
+  color: #ffffff;
+}
+
+.slideCta {
+  background: #7a72e8;
+  color: #ffffff;
+}
+
+/* IMPACT — 은은한 보라 그라데이션 다크(대비 확보) */
+.slideImpact {
+  background: linear-gradient(155deg, #4b3fb8 0%, #6c5ce7 55%, #2a2550 100%);
+  color: #ffffff;
+}
+
+/* ----- SlideFrame 레이어 ----- */
+/* z0 배경 사진 (cover). bg 이미지가 있을 때만 렌더 → 없으면 .slide 기본 배경 노출. */
+.bgLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* z1 어둡게 오버레이 (텍스트 가독성) */
+.bgOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+/* z2 콘텐츠 — 원래 .slide가 갖던 flex 레이아웃/패딩을 그대로 승계.
+   inset:0 이라 .slide와 동일 박스 → 절대배치 footer/arrow 좌표가 동일하게 유지됨. */
+.slideContent {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  padding: 72px;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+}
+.slideCta .slideContent {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* z3 삽입 이미지 */
+.insertedWrap {
+  position: absolute;
+  z-index: 3;
+  touch-action: none; /* 포인터 제스처 중 스크롤/줌 방지 */
+}
+.insertedImg {
+  position: absolute;
+  z-index: 3;
+  display: block;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* wrap 안의 img는 wrap을 채우도록 좌표 리셋 */
+.insertedWrap .insertedImg {
+  position: static;
+  left: auto;
+  top: auto;
+  width: 100%;
+}
+.insertedImgEditable {
+  cursor: move;
+  touch-action: none;
+  outline: 3px dashed rgba(108, 92, 231, 0.9);
+  outline-offset: 0;
+}
+/* 우하단 리사이즈 핸들 (미리보기 편집 전용 — 포인터 어포던스, aria-hidden) */
+.resizeHandle {
+  position: absolute;
+  right: -22px;
+  bottom: -22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #6c5ce7;
+  border: 6px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+/* z4 자유 텍스트 박스 (1080-space). 좌표/폭은 인라인 스타일, 높이는 내용에 따라 auto. */
+.textBox {
+  position: absolute;
+  z-index: 4;
+  box-sizing: border-box;
+}
+/* 편집(미리보기) 전용 — 드래그 이동 + 점선 외곽선. 캡처본에는 미적용. */
+.textBoxEditable {
+  cursor: move;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 40px;
+  outline: 3px dashed rgba(108, 92, 231, 0.9);
+  outline-offset: 6px;
+}
+/* 우하단 폭 리사이즈 핸들 (편집 전용) */
+.textBoxResize {
+  position: absolute;
+  right: -22px;
+  bottom: -22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #6c5ce7;
+  border: 6px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+/* 우상단 삭제 핸들 (편집 전용) */
+.textBoxDelete {
+  position: absolute;
+  top: -28px;
+  right: -28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #ffffff;
+  border: 6px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  touch-action: none;
+}
+
+/* 칩 (eyebrow) */
+.chip {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 27px;
+  line-height: 1;
+  background: #f0f0f5;
+  color: #6c5ce7;
+}
+.chipDark {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+.chipCenter {
+  align-self: center;
+}
+
+/* 헤드라인 */
+.headline {
+  font-weight: 800;
+  font-size: 88px;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  margin: 0;
+  white-space: pre-line;
+}
+.headlineCover {
+  color: #ffffff;
+  font-size: 100px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.headlineSection {
+  color: #6c5ce7;
+}
+.headlineCta {
+  color: #ffffff;
+  font-size: 84px;
+}
+
+/* 서브텍스트 */
+.sub {
+  font-size: 33px;
+  line-height: 1.5;
+  color: #3a3a44;
+  white-space: pre-line;
+  margin: 0;
+}
+.subCover {
+  color: #ececf2;
+}
+.subCta {
+  color: #ffffff;
+  white-space: pre-line;
+}
+
+/* 카드 */
+.card {
+  border-radius: 26px;
+  background: #f4f4f8;
+  padding: 30px 32px;
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+.cardHi {
+  background: #f2f0fd;
+  border: 2.5px solid #6c5ce7;
+}
+.cardEmoji {
+  font-size: 40px;
+  line-height: 1.1;
+  flex: 0 0 auto;
+}
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cardTitle {
+  font-size: 37px;
+  font-weight: 800;
+  color: #1b1b22;
+  line-height: 1.2;
+}
+.cardDesc {
+  font-size: 30px;
+  line-height: 1.45;
+  color: #5a5a66;
+}
+
+/* 카드/행 스택 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 40px;
+}
+.stackTight {
+  gap: 18px;
+}
+
+/* 헤더 묶음(칩 + 제목) */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+/* 숫자 스텝 (HOW) */
+.step {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.stepNum {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: #6c5ce7;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stepText {
+  font-size: 35px;
+  font-weight: 600;
+  color: #1b1b22;
+  line-height: 1.3;
+}
+
+.note2 {
+  font-size: 30px;
+  color: #8e8e99;
+  margin-top: 32px;
+  line-height: 1.5;
+}
+
+/* ----- CHECKLIST (체크리스트) ----- */
+.checkRow {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  background: #f4f4f8;
+  border-radius: 22px;
+  padding: 26px 30px;
+}
+.checkBadge {
+  flex: 0 0 auto;
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: #6c5ce7;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.checkText {
+  font-size: 35px;
+  font-weight: 700;
+  color: #1b1b22;
+  line-height: 1.3;
+}
+
+/* ----- Q&A ----- */
+.qaBlock {
+  background: #f4f4f8;
+  border-radius: 26px;
+  padding: 30px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.qaQ {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.qaBadge {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #6c5ce7;
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.qaQuestion {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1b1b22;
+  line-height: 1.25;
+}
+.qaAnswer {
+  font-size: 31px;
+  line-height: 1.45;
+  color: #5a5a66;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* ----- IMPACT (한 줄 임팩트, 중앙) ----- */
+.impactCol {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 36px;
+}
+.impactHeadline {
+  font-size: 116px;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0;
+  white-space: pre-line;
+}
+.impactSub {
+  font-size: 38px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* ----- STATS (숫자·통계 3블록) ----- */
+.statStack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 40px;
+}
+.statBlock {
+  background: #f2f0fd;
+  border: 2.5px solid #6c5ce7;
+  border-radius: 26px;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.statNumber {
+  font-size: 80px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #6c5ce7;
+}
+.statLabel {
+  font-size: 32px;
+  font-weight: 600;
+  color: #3a3a44;
+  line-height: 1.3;
+}
+
+/* ----- SHOWCASE (결과물 쇼케이스 — 이미지 삽입으로 채움) ----- */
+.showcaseFrame {
+  flex: 1 1 auto;
+  margin-top: 32px;
+  border-radius: 32px;
+  border: 3px dashed rgba(108, 92, 231, 0.45);
+  background: #f4f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.showcaseHint {
+  font-size: 34px;
+  font-weight: 700;
+  color: #9a9aab;
+}
+.showcaseCaption {
+  font-size: 30px;
+  color: #8e8e99;
+  margin-top: 28px;
+  line-height: 1.5;
+}
+
+/* ----- PROMPTCARD (프롬프트 복붙 카드) ----- */
+.promptHead {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.promptBadge {
+  align-self: flex-start;
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo,
+    Consolas, monospace;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #6c5ce7;
+  background: #f0f0f5;
+  border-radius: 10px;
+  padding: 10px 18px;
+  line-height: 1;
+}
+.promptWhy {
+  font-size: 31px;
+  line-height: 1.45;
+  color: #5a5a66;
+  margin: 0;
+  white-space: pre-line;
+}
+.codeBlock {
+  flex: 1 1 auto;
+  margin-top: 36px;
+  background: #1b1b22;
+  border-radius: 26px;
+  padding: 34px 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: hidden;
+}
+.codeDots {
+  display: flex;
+  gap: 14px;
+}
+.codeDots span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+.codeText {
+  margin: 0;
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo,
+    Consolas, monospace;
+  font-size: 33px;
+  line-height: 1.5;
+  color: #f1f0ff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.codeHint {
+  font-size: 28px;
+  font-weight: 600;
+  color: #8e8e99;
+  margin: 24px 0 0;
+}
+
+/* ----- COMPARE (비교 2단) ----- */
+.compareWrap {
+  flex: 1 1 auto;
+  margin-top: 40px;
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+}
+.compareCol {
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 26px;
+  padding: 34px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.compareLeft {
+  background: #f4f4f8;
+}
+.compareRight {
+  background: #f2f0fd;
+  border: 2.5px solid #6c5ce7;
+}
+.compareTitle {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #1b1b22;
+}
+.compareLeft .compareTitle {
+  color: #8e8e99;
+}
+.compareRight .compareTitle {
+  color: #6c5ce7;
+}
+.compareBody {
+  font-size: 30px;
+  line-height: 1.5;
+  color: #5a5a66;
+  margin: 0;
+  white-space: pre-line;
+}
+.compareVs {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: 34px;
+  font-weight: 900;
+  color: #6c5ce7;
+  letter-spacing: 0.04em;
+}
+
+/* ----- DEFINE (개념 정의) ----- */
+.defineBox {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-left: 8px solid #6c5ce7;
+  padding-left: 32px;
+}
+.defineTerm {
+  font-size: 92px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #1b1b22;
+}
+.defineDef {
+  font-size: 37px;
+  line-height: 1.45;
+  color: #3a3a44;
+  margin: 0;
+  white-space: pre-line;
+}
+.definePoints {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 44px;
+}
+.definePoint {
+  display: flex;
+  gap: 22px;
+  align-items: baseline;
+  background: #f4f4f8;
+  border-radius: 20px;
+  padding: 24px 30px;
+}
+.definePointLabel {
+  flex: 0 0 auto;
+  min-width: 120px;
+  font-size: 32px;
+  font-weight: 800;
+  color: #6c5ce7;
+  line-height: 1.3;
+}
+.definePointDesc {
+  font-size: 30px;
+  line-height: 1.4;
+  color: #5a5a66;
+}
+
+/* ----- NOTICE (밀집 불릿) ----- */
+.bulletList {
+  list-style: none;
+  margin: 40px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.bulletItem {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+.bulletDot {
+  flex: 0 0 auto;
+  font-size: 32px;
+  line-height: 1.35;
+  color: #6c5ce7;
+  font-weight: 800;
+}
+.bulletText {
+  font-size: 32px;
+  line-height: 1.4;
+  color: #2a2a33;
+  font-weight: 500;
+}
+
+/* ----- TOC (목차/커리큘럼) ----- */
+.tocList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 40px;
+}
+.tocRow {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  padding: 22px 0;
+  border-bottom: 2px solid #ececf2;
+}
+.tocNo {
+  flex: 0 0 auto;
+  font-size: 40px;
+  font-weight: 900;
+  color: #6c5ce7;
+  letter-spacing: -0.02em;
+  min-width: 72px;
+}
+.tocTitle {
+  flex: 0 1 auto;
+  font-size: 38px;
+  font-weight: 700;
+  color: #1b1b22;
+  line-height: 1.25;
+}
+.tocDots {
+  flex: 1 1 auto;
+  align-self: flex-end;
+  border-bottom: 3px dotted #c8c8d4;
+  margin: 0 6px 14px;
+  min-width: 24px;
+}
+.tocPage {
+  flex: 0 0 auto;
+  font-size: 32px;
+  font-weight: 700;
+  color: #8e8e99;
+}
+
+/* ----- PKG (제공 구성/패키지) ----- */
+.pkgRow {
+  background: #f4f4f8;
+  border-radius: 24px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pkgMain {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.pkgName {
+  font-size: 38px;
+  font-weight: 800;
+  color: #1b1b22;
+  line-height: 1.2;
+}
+.pkgQty {
+  flex: 0 0 auto;
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  background: #6c5ce7;
+  border-radius: 999px;
+  padding: 8px 20px;
+  line-height: 1;
+}
+.pkgDesc {
+  font-size: 30px;
+  line-height: 1.4;
+  color: #5a5a66;
+}
+
+/* ----- PROBLEM (핵심 문제·페인 후킹) ----- */
+.problemCol {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+}
+.problemQ {
+  font-size: 96px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #1b1b22;
+  margin: 0;
+  white-space: pre-line;
+}
+.problemDesc {
+  font-size: 36px;
+  line-height: 1.5;
+  color: #5a5a66;
+  margin: 0;
+  white-space: pre-line;
+}
+.problemTwist {
+  align-self: flex-start;
+  font-size: 38px;
+  font-weight: 800;
+  color: #6c5ce7;
+  background: #f2f0fd;
+  border-radius: 16px;
+  padding: 20px 30px;
+  line-height: 1.3;
+  margin: 8px 0 0;
+}
+
+/* ----- ROLETABLE (역할 분담 표) ----- */
+.roleTable {
+  margin-top: 40px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 2px solid #ececf2;
+}
+.roleRow {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2px solid #ececf2;
+}
+.roleRow:last-child {
+  border-bottom: none;
+}
+.roleHead {
+  background: #6c5ce7;
+}
+.roleHead .roleCellRole,
+.roleHead .roleCellDesc {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 32px;
+}
+.roleCellRole {
+  flex: 0 0 300px;
+  padding: 26px 30px;
+  font-size: 35px;
+  font-weight: 800;
+  color: #1b1b22;
+  line-height: 1.3;
+  border-right: 2px solid #ececf2;
+  display: flex;
+  align-items: center;
+}
+.roleCellDesc {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 26px 30px;
+  font-size: 32px;
+  color: #5a5a66;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+}
+
+/* ----- STATCOVER (숫자·권위 훅 커버) ----- */
+.statCoverCol {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 30px;
+}
+.statCoverStat {
+  font-size: 240px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+}
+.statCoverTitle {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* ----- HOWTO (사용법·준비물) ----- */
+.howtoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.howtoSection + .howtoSection {
+  margin-top: 44px;
+}
+.howtoLabel {
+  align-self: flex-start;
+  font-size: 30px;
+  font-weight: 800;
+  color: #6c5ce7;
+  background: #f0f0f5;
+  border-radius: 999px;
+  padding: 12px 26px;
+  line-height: 1;
+}
+.howtoPrep {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.howtoPrepItem {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.howtoCheck {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #f2f0fd;
+  color: #6c5ce7;
+  font-size: 28px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.howtoPrepText {
+  font-size: 33px;
+  font-weight: 600;
+  color: #2a2a33;
+  line-height: 1.3;
+}
+.howtoSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 커버 — 하단 흰색 라벨 바 */
+.labelBars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  margin-top: 38px;
+}
+.labelBar {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 22px;
+  font-size: 44px;
+  font-weight: 800;
+  color: #1b1b22;
+  line-height: 1.1;
+}
+
+/* COVER 레이아웃 — 헤드라인은 위, 라벨바는 아래로 */
+.coverTop {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.coverGrow {
+  flex: 1 1 auto;
+}
+
+/* 폰 목업 (MOCKUP) */
+.mockWrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+}
+.phone {
+  width: 440px;
+  height: 720px;
+  border-radius: 54px;
+  background: #16161c;
+  padding: 18px;
+  box-shadow: 0 28px 60px rgba(27, 27, 34, 0.22);
+}
+.phoneScreen {
+  width: 100%;
+  height: 100%;
+  border-radius: 38px;
+  background: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.phoneHero {
+  background: linear-gradient(135deg, #6c5ce7 0%, #8b7ff0 100%);
+  padding: 34px 28px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.phoneBarLg {
+  height: 26px;
+  width: 78%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+}
+.phoneBarSm {
+  height: 16px;
+  width: 56%;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
+}
+.phoneCta {
+  margin-top: 12px;
+  height: 48px;
+  width: 64%;
+  border-radius: 12px;
+  background: #ffffff;
+}
+.phoneBody {
+  flex: 1 1 auto;
+  padding: 26px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #f4f4f8;
+}
+.phoneCard {
+  background: #ffffff;
+  border-radius: 16px;
+  height: 92px;
+  border: 1px solid #ececf2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  justify-content: center;
+}
+.phoneCardBar {
+  height: 14px;
+  border-radius: 5px;
+  background: #e2e2ec;
+}
+.phoneCardBar.short {
+  width: 50%;
+}
+
+/* CTA — 큰 알약 버튼 */
+.ctaCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  max-width: 840px;
+}
+.pillBtn {
+  background: #ffffff;
+  color: #6c5ce7;
+  font-size: 38px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 30px 50px;
+  line-height: 1.1;
+  box-shadow: 0 16px 40px rgba(27, 27, 34, 0.18);
+}
+.saveShare {
+  display: flex;
+  gap: 70px;
+  margin-top: 8px;
+}
+.ss {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.ssIcon {
+  font-size: 52px;
+  line-height: 1;
+}
+.ssLabel {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+/* 푸터 (모든 슬라이드 좌하단) */
+.footer {
+  position: absolute;
+  left: 72px;
+  bottom: 56px;
+  font-size: 26px;
+  color: rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.01em;
+}
+.footerDark {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 다음 화살표 (마지막 제외, 우하단 원형) */
+.arrow {
+  position: absolute;
+  right: 72px;
+  bottom: 50px;
+  width: 78px;
+  height: 78px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(27, 27, 34, 0.55);
+  color: #1b1b22;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 600;
+}
+.arrowDark {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+}
+
+/* ============================================================
+   슬라이드별 이미지 편집 컨트롤 (EYEshare 다크 크롬)
+   ============================================================ */
+.editor {
+  width: 340px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.editGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editGroupLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 파일 업로드 버튼(label) — 시각적 input 숨김 + label을 버튼처럼 */
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.fileBtn:hover {
+  background: var(--hover);
+  border-color: var(--line-strong);
+}
+
+/* input:focus-visible 가 label에 포커스 링을 그리도록 */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.visuallyHidden:focus-visible + .editBtnGhost,
+.fileBtn:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.editBtnGhost {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.editBtnGhost:hover {
+  background: var(--hover);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.editBtnGhost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.editBtnGhost:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* 삭제(위험) 버튼 */
+.editBtnDanger {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  margin-left: auto;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.editBtnDanger:hover {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.6);
+  color: #fca5a5;
+}
+.editBtnDanger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.editBtnDanger:focus-visible {
+  outline: 2px solid #f87171;
+  outline-offset: 2px;
+}
+
+/* 템플릿 교체 <select> */
+.select {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 11px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.select:hover {
+  border-color: var(--line-strong);
+}
+.select:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.rangeLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  flex: 0 0 auto;
+}
+
+.range {
+  flex: 1 1 120px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+.editHelp {
+  font-size: 11px;
+  color: var(--ink-3);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ============================================================
+   문구 편집 (collapsible) — 다크 크롬 재사용
+   ============================================================ */
+.textEdit {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.textEditSummary {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  list-style: none;
+  padding: 2px 0;
+  user-select: none;
+  transition: color 160ms ease;
+}
+.textEditSummary::-webkit-details-marker {
+  display: none;
+}
+.textEditSummary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--ink-3);
+  transition: transform 160ms ease;
+}
+.textEdit[open] > .textEditSummary::before {
+  transform: rotate(90deg);
+}
+.textEditSummary:hover {
+  color: var(--ink);
+}
+.textEditSummary:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.textEditBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* 개별 필드 (label + input/textarea) */
+.textField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.textFieldLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+.textFieldHint {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.textInput,
+.textArea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 11px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.textArea {
+  line-height: 1.45;
+  resize: vertical;
+  min-height: 64px;
+}
+.emojiInput {
+  width: 64px;
+  text-align: center;
+}
+.textInput::placeholder,
+.textArea::placeholder {
+  color: var(--ink-3);
+}
+.textInput:hover,
+.textArea:hover {
+  border-color: var(--line-strong);
+}
+.textInput:focus-visible,
+.textArea:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.textInput:disabled,
+.textArea:disabled {
+  opacity: 0.5;
+}
+
+/* 카드/행 항목 묶음 (이모지/제목/설명) */
+.textSubgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0;
+  min-width: 0;
+}
+.textSubgroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 배열 항목 묶음(카드/스텝/Q&A …) — 라벨 + 항목들 + 추가 버튼 */
+.arrayGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.arrayGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+/* 항목 추가 */
+.itemAddBtn {
+  align-self: flex-start;
+  background: var(--brand-soft);
+  color: var(--ink);
+  border: 1px solid rgba(108, 92, 231, 0.35);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 13px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.itemAddBtn:hover {
+  background: rgba(108, 92, 231, 0.26);
+  border-color: var(--brand);
+}
+.itemAddBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.itemAddBtn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* 항목 삭제(작은 ✕, legend 우측) */
+.itemRemoveBtn {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.itemRemoveBtn:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.5);
+}
+.itemRemoveBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.itemRemoveBtn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+/* ============================================================
+   텍스트 박스 편집 컨트롤 (자유 배치 텍스트)
+   ============================================================ */
+.tbItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px 12px;
+  margin-top: 8px;
+  min-width: 0;
+}
+.tbItemHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tbItemTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.tbItemActions {
+  display: flex;
+  gap: 6px;
+}
+/* danger 버튼은 기본 margin-left:auto → 액션 묶음 안에서는 해제 */
+.tbItemActions .editBtnDanger {
+  margin-left: 0;
+}
+.tbColor {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 34px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.tbColor:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.tbCheckRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.tbCheckRow input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+/* ============================================================
+   슬라이드 추가 패널 (그리드의 마지막 셀)
+   ============================================================ */
+.addPanel {
+  width: 340px;
+  max-width: 100%;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px dashed var(--line-strong);
+  border-radius: 16px;
+  padding: 18px 18px 20px;
+}
+.addPanelTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.addPanelHelp {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: -6px 0 0;
+  line-height: 1.4;
+}
+.addGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.addGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.addBtnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.addTplBtn {
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 13px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.addTplBtn:hover {
+  background: var(--hover);
+  border-color: var(--brand);
+}
+.addTplBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.addTplBtn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* prefers-reduced-motion — 크롬 UI 트랜지션 비활성 */
+@media (prefers-reduced-motion: reduce) {
+  .input,
+  .btnPrimary,
+  .btnGhost,
+  .fileBtn,
+  .editBtnGhost,
+  .editBtnDanger,
+  .select,
+  .itemAddBtn,
+  .itemRemoveBtn,
+  .addTplBtn,
+  .textInput,
+  .textArea,
+  .textEditSummary,
+  .textEditSummary::before,
+  .configSummary,
+  .configSummary::before {
+    transition: none;
+  }
+  .btnPrimary:active {
+    transform: none;
+  }
+}
