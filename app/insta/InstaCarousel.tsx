@@ -72,8 +72,12 @@ const FONTS: { id: string; label: string; stack: string }[] = [
   { id: "mono", label: "JetBrains Mono (코드)", stack: '"JetBrains Mono", ui-monospace, monospace' },
   { id: "hand", label: "개구 (손글씨)", stack: '"Gaegu", cursive' },
 ];
-const FONT_SANS = FONTS[0].stack;
-const FONT_MONO = FONTS[3].stack;
+const FONT_SANS = "sans";
+const FONT_MONO = "mono";
+/** fontFamily 값이 폰트 id(sans/serif/display/mono/hand)면 실제 CSS stack으로, 아니면 그대로 사용 */
+function resolveFont(f: string): string {
+  return FONTS.find((x) => x.id === f)?.stack ?? f;
+}
 
 /* ============================================================
    타입 — 요소(레이어) 모델
@@ -1459,7 +1463,7 @@ function ElementBox({
             if (e.key === "Escape") onEndEdit?.();
           }}
           style={{
-            fontFamily: el.fontFamily,
+            fontFamily: resolveFont(el.fontFamily),
             fontSize: el.size,
             fontWeight: el.weight,
             fontStyle: el.italic ? "italic" : "normal",
@@ -1493,7 +1497,7 @@ function ElementContent({ el }: { el: AnyEl }) {
   if (el.kind === "text") {
     const t = el;
     const textStyle: React.CSSProperties = {
-      fontFamily: t.fontFamily,
+      fontFamily: resolveFont(t.fontFamily),
       fontSize: t.size,
       fontWeight: t.weight,
       fontStyle: t.italic ? "italic" : "normal",
@@ -1630,7 +1634,7 @@ function TextInspector({ el, onChange }: { el: TextEl; onChange: (p: Partial<Tex
       <label className={styles.fieldLabel}>폰트</label>
       <select className={styles.select} value={el.fontFamily} onChange={(e) => onChange({ fontFamily: e.target.value })}>
         {FONTS.map((f) => (
-          <option key={f.id} value={f.stack}>{f.label}</option>
+          <option key={f.id} value={f.id}>{f.label}</option>
         ))}
       </select>
 
@@ -1824,6 +1828,3 @@ function normalizeHex(hex: string): string {
   if (/^#[0-9a-fA-F]{3}$/.test(h)) return `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}`;
   return "#000000";
 }
-
-// FONT_MONO 는 향후 코드 박스 프리셋에서 사용 (현재 폰트 목록에 포함)
-void FONT_MONO;
