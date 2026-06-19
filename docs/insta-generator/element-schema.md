@@ -76,7 +76,7 @@
 | `fit` | `"cover"`/`"contain"` | 채움 방식 |
 | `radius` | number | (선택) 모서리 둥글기 |
 
-> 사진·스크린샷·캐릭터는 생성 JSON에 넣지 마세요(데이터가 없어 빈 칸이 됩니다). 이미지는 에디터에서 직접 업로드하거나 배경 이미지로 넣습니다.
+> 사진·스크린샷은 생성 JSON에 넣을 수 없습니다(데이터가 없어 빈 칸). 직접 업로드하세요. 단 **엉클비 번들 캐릭터(§6)** url은 그대로 넣으면 렌더됩니다(`fit:"contain"`).
 
 ---
 
@@ -123,9 +123,19 @@
 | highlight | `#BBD5FF` | 형광펜 |
 | on-dark | `#DCE6FA` | 다크 위 본문 |
 
-**캐릭터/장식**
-- 캐릭터 컷아웃 에셋은 **추후 엉클비 캐릭터로 추가 예정**입니다(현재 번들 없음). 캐릭터가 필요하면 에디터에서 직접 이미지로 업로드하세요. (생성 JSON에 캐릭터 이미지 url을 넣지 말 것)
-- 빠른 장식: 텍스트 요소로 `✦`(반짝이) / `→`(화살표)를 넣으면 됩니다(색 brand `#2F6BFF`).
+**번들 엉클비 캐릭터** — `image` 요소 url로 그대로 사용 가능. `fit:"contain"`, 권장 높이 ~600(전신), 카드/3-4 컷은 비율에 맞게. url 패턴: `/assets/characters/uncleb-{id}.png`
+
+| 그룹 | id |
+|------|----|
+| 인사·긍정 | `wave` 인사 · `welcome` 환영 · `thumbsup` 엄지척 · `heart` 손하트 |
+| 안내·설명 | `present` 손바닥 · `guideR` 오른쪽 · `guideL` 왼쪽 · `phone` 폰 |
+| 생각·궁금 | `think` 생각 · `shrug` 갸웃 · `magnify` 돋보기 · `doc` 서류 |
+| 신뢰·공감 | `chest` 가슴에손 · `ok` OK · `arms` 팔짱 · `clap` 박수 |
+| 행동·업무 | `clipboard` 체크 · `gift` 선물 · `pointdown` 아래가리킴(CTA) · `neutral` 기본 |
+
+예) `{ "kind":"image", "x":640, "y":680, "w":280, "h":600, "url":"/assets/characters/uncleb-present.png", "fit":"contain" }`
+
+- 빠른 장식: 텍스트 요소로 `✦`(반짝이) / `→`(화살표). 색 brand `#2F6BFF`.
 
 ---
 

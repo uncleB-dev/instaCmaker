@@ -360,6 +360,32 @@ function makeDefaultProject(): Project {
 }
 
 /* ============================================================
+   번들 에셋 (엉클비 캐릭터 컷아웃) · 빠른 삽입용
+   ============================================================ */
+const CHAR_ASSETS: { id: string; label: string; url: string; w: number; h: number }[] = [
+  { id: "wave", label: "인사", url: "/assets/characters/uncleb-wave.png", w: 276, h: 445 },
+  { id: "welcome", label: "환영", url: "/assets/characters/uncleb-welcome.png", w: 434, h: 445 },
+  { id: "thumbsup", label: "엄지척", url: "/assets/characters/uncleb-thumbsup.png", w: 244, h: 452 },
+  { id: "heart", label: "손하트", url: "/assets/characters/uncleb-heart.png", w: 242, h: 452 },
+  { id: "present", label: "설명(손바닥)", url: "/assets/characters/uncleb-present.png", w: 247, h: 429 },
+  { id: "guideR", label: "안내(오른쪽)", url: "/assets/characters/uncleb-guideR.png", w: 250, h: 429 },
+  { id: "guideL", label: "안내(왼쪽)", url: "/assets/characters/uncleb-guideL.png", w: 251, h: 429 },
+  { id: "phone", label: "폰 보여주기", url: "/assets/characters/uncleb-phone.png", w: 198, h: 429 },
+  { id: "think", label: "생각", url: "/assets/characters/uncleb-think.png", w: 159, h: 428 },
+  { id: "shrug", label: "갸웃", url: "/assets/characters/uncleb-shrug.png", w: 326, h: 428 },
+  { id: "magnify", label: "돋보기", url: "/assets/characters/uncleb-magnify.png", w: 213, h: 437 },
+  { id: "doc", label: "서류 읽기", url: "/assets/characters/uncleb-doc.png", w: 196, h: 435 },
+  { id: "chest", label: "가슴에 손", url: "/assets/characters/uncleb-chest.png", w: 480, h: 480 },
+  { id: "ok", label: "OK", url: "/assets/characters/uncleb-ok.png", w: 480, h: 480 },
+  { id: "arms", label: "팔짱", url: "/assets/characters/uncleb-arms.png", w: 235, h: 469 },
+  { id: "clap", label: "박수", url: "/assets/characters/uncleb-clap.png", w: 253, h: 469 },
+  { id: "clipboard", label: "체크리스트", url: "/assets/characters/uncleb-clipboard.png", w: 429, h: 907 },
+  { id: "gift", label: "선물", url: "/assets/characters/uncleb-gift.png", w: 368, h: 900 },
+  { id: "pointdown", label: "아래 가리킴", url: "/assets/characters/uncleb-pointdown.png", w: 406, h: 900 },
+  { id: "neutral", label: "기본", url: "/assets/characters/uncleb-neutral.png", w: 463, h: 907 },
+];
+
+/* ============================================================
    기본 템플릿 (엉클비 스타일) — 적용 시 새 슬라이드로 추가(요소 id 재발급)
    ============================================================ */
 const PAPER = "#EEF3FC";
@@ -689,6 +715,16 @@ export function InstaCarousel() {
     [addElement],
   );
 
+  /** 번들 캐릭터 삽입 — 화면 기준 높이 600에 맞춰 가운데 아래쪽에 */
+  const insertAsset = useCallback(
+    (url: string, w: number, h: number) => {
+      const H = 600;
+      const w2 = Math.round((w * H) / h);
+      addElement({ id: uid("i"), kind: "image", x: Math.round((SLIDE_W - w2) / 2), y: 660, w: w2, h: H, url, fit: "contain", radius: 0 });
+    },
+    [addElement],
+  );
+
   /** 빠른 텍스트 에셋(반짝이 등) */
   const insertGlyph = useCallback(
     (text: string) => addElement(newText({ text, x: 480, y: 480, w: 220, size: 120, weight: 900, color: ACCENT, align: "center" })),
@@ -988,7 +1024,15 @@ export function InstaCarousel() {
             ))}
           </div>
 
-          <div className={styles.panelHead}>에셋</div>
+          <div className={styles.panelHead}>에셋 · 엉클비 캐릭터</div>
+          <div className={styles.assetGrid}>
+            {CHAR_ASSETS.map((a) => (
+              <button key={a.id} type="button" className={styles.assetBtn} onClick={() => insertAsset(a.url, a.w, a.h)} title={a.label}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.url} alt={a.label} />
+              </button>
+            ))}
+          </div>
           <div className={styles.row}>
             <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("✦")}>✦ 반짝이</button>
             <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("→")}>→ 화살표</button>
