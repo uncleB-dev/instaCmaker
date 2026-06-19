@@ -15,7 +15,7 @@ instaCmaker 스튜디오의 **JSON 불러오기**에 바로 붙여넣을
 |------|------|
 | `SYSTEM_PROMPT.md` | Claude Project **커스텀 인스트럭션**에 붙여넣는 역할 정의 |
 | `element-schema.md` | **스키마 정본** — 요소 타입·좌표계·폰트/팔레트·**레이아웃 프리셋 6종 JSON**. 프로젝트 지식으로 첨부 |
-| `copywriting-skill.md` | **전략·톤·뭉이 디자인 시스템** 플레이북. 프로젝트 지식으로 첨부 |
+| `copywriting-skill.md` | **전략·톤·엉클비 디자인 시스템** 플레이북. 프로젝트 지식으로 첨부 |
 | `README.md` | (이 문서) 개요·사용법 |
 
 ## 사용법 (Claude.ai Project)

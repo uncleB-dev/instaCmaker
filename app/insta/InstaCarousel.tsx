@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * instaCmaker — 뭉이(moongi) 캔버스 스튜디오
+ * instaCmaker — 엉클비(uncleb) 캔버스 스튜디오
  * ------------------------------------------------------------
  * 캔바/미리캔버스식 "요소(레이어) 기반" 인스타 캐러셀 편집기. (클라이언트 전용 · 백엔드 없음)
  *
@@ -43,16 +43,16 @@ const FONT_MAX = 320;
 const STORAGE_PROJECT = "instacmaker:project:v2";
 const STORAGE_TEMPLATES = "instacmaker:templates:v2";
 
-/** 뭉이 팔레트 (빠른 색 선택) */
+/** 엉클비 팔레트 (파랑 계열, 빠른 색 선택) */
 const PALETTE = [
-  "#EDE6D4", // cream
-  "#F5F1E6", // paper
+  "#EEF3FC", // paper (연한 블루)
   "#FFFFFF",
-  "#1B1B22", // navy/ink
-  "#15151A", // dark box
-  "#E8553A", // coral
-  "#F4C84A", // yellow(형광펜)
-  "#8A8577", // mud gray
+  "#0F1F3D", // dark navy (다크 박스/배경)
+  "#17233E", // ink (헤드라인/본문)
+  "#2F6BFF", // brand blue (강조)
+  "#1E4FD0", // deep blue
+  "#BBD5FF", // light blue (형광펜)
+  "#7686A6", // blue-gray (서브/푸터)
 ];
 
 /** 폰트 — CDN(app/layout.tsx). stack 문자열을 fontFamily 로 그대로 사용 */
@@ -261,7 +261,7 @@ function newText(partial?: Partial<TextEl>): TextEl {
     weight: 800,
     italic: false,
     underline: false,
-    color: "#1B1B22",
+    color: "#17233E",
     align: "left",
     lineHeight: 1.18,
     letterSpacing: 0,
@@ -279,10 +279,10 @@ function newShape(shape: ShapeKind): ShapeEl {
     w: 360,
     h: 240,
     shape,
-    fill: "#15151A",
+    fill: "#0F1F3D",
     radius: shape === "roundRect" ? 36 : 0,
   };
-  if (shape === "line") return { ...base, x: 120, y: 540, w: 840, h: 8, fill: "#1B1B22" };
+  if (shape === "line") return { ...base, x: 120, y: 540, w: 840, h: 8, fill: "#17233E" };
   if (shape === "ellipse") return { ...base, w: 280, h: 280 };
   return base;
 }
@@ -304,14 +304,14 @@ function cloneSlide(slide: Slide, freshId = true): Slide {
 }
 
 function emptySlide(): Slide {
-  return { id: uid("sl"), background: { color: "#EDE6D4" }, elements: [] };
+  return { id: uid("sl"), background: { color: "#EEF3FC" }, elements: [] };
 }
 
-/** 처음 보여줄 데모 슬라이드 (뭉이 톤) */
+/** 처음 보여줄 데모 슬라이드 (엉클비 톤) */
 function makeDefaultProject(): Project {
   const slide: Slide = {
     id: uid("sl"),
-    background: { color: "#EDE6D4" },
+    background: { color: "#EEF3FC" },
     elements: [
       newText({
         x: 96,
@@ -320,7 +320,7 @@ function makeDefaultProject(): Project {
         text: "A DIARY · EP.01",
         size: 30,
         weight: 800,
-        color: "#E8553A",
+        color: "#2F6BFF",
         letterSpacing: 4,
       }),
       newText({
@@ -330,7 +330,7 @@ function makeDefaultProject(): Project {
         text: "여기에\n헤드라인을 적어요.",
         size: 110,
         weight: 900,
-        color: "#1B1B22",
+        color: "#17233E",
         lineHeight: 1.08,
       }),
       newText({
@@ -340,15 +340,15 @@ function makeDefaultProject(): Project {
         text: "본문 텍스트입니다. 좌측 도구로 텍스트·이미지·도형을 추가하고 자유롭게 배치하세요.",
         size: 36,
         weight: 500,
-        color: "#5A554A",
+        color: "#56627D",
         lineHeight: 1.45,
       }),
-      { ...newShape("roundRect"), x: 96, y: 1140, w: 888, h: 120, fill: "#15151A", radius: 28 },
+      { ...newShape("roundRect"), x: 96, y: 1140, w: 888, h: 120, fill: "#0F1F3D", radius: 28 },
       newText({
         x: 96,
         y: 1175,
         w: 888,
-        text: "@moongi_adventures",
+        text: "@uncleb_studio",
         size: 44,
         weight: 800,
         color: "#FFFFFF",
@@ -360,40 +360,26 @@ function makeDefaultProject(): Project {
 }
 
 /* ============================================================
-   번들 에셋 (뭉이 캐릭터 컷아웃) · 빠른 삽입용
+   기본 템플릿 (엉클비 스타일) — 적용 시 새 슬라이드로 추가(요소 id 재발급)
    ============================================================ */
-const CHAR_ASSETS: { id: string; label: string; url: string; w: number; h: number }[] = [
-  { id: "think", label: "생각", url: "/assets/characters/moongi-think.png", w: 320, h: 546 },
-  { id: "work", label: "작업", url: "/assets/characters/moongi-work.png", w: 360, h: 556 },
-  { id: "confident", label: "자신감", url: "/assets/characters/moongi-confident.png", w: 330, h: 553 },
-  { id: "down", label: "풀죽음", url: "/assets/characters/moongi-down.png", w: 340, h: 497 },
-  { id: "present", label: "소개", url: "/assets/characters/moongi-present.png", w: 350, h: 568 },
-];
+const PAPER = "#EEF3FC";
+const NAVY = "#17233E";
+const ACCENT = "#2F6BFF";
+const MUTED = "#7686A6";
+const DARK = "#0F1F3D";
 
-/* ============================================================
-   기본 템플릿 (뭉이 스타일) — 적용 시 새 슬라이드로 추가(요소 id 재발급)
-   ============================================================ */
-const CREAM = "#EDE6D4";
-const NAVY = "#1B1B22";
-const CORAL = "#E8553A";
-const MUD = "#8A8577";
-const DARK = "#15151A";
-
-function img(url: string, x: number, y: number, w: number, h: number): ImageEl {
-  return { id: uid("i"), kind: "image", x, y, w, h, url, fit: "contain", radius: 0 };
-}
 function rrect(x: number, y: number, w: number, h: number, fill: string, radius = 28): ShapeEl {
   return { id: uid("s"), kind: "shape", x, y, w, h, shape: "roundRect", fill, radius };
 }
 
 function buildTemplates(): Template[] {
-  const footer = (handle = "@moongi_adventures"): TextEl[] => [
-    newText({ x: 96, y: 1262, w: 520, text: handle, size: 30, weight: 700, color: MUD }),
-    newText({ x: 564, y: 1262, w: 420, text: "moongi studio", size: 30, weight: 400, color: MUD, align: "right" }),
+  const footer = (handle = "@uncleb_studio"): TextEl[] => [
+    newText({ x: 96, y: 1262, w: 520, text: handle, size: 30, weight: 700, color: MUTED }),
+    newText({ x: 564, y: 1262, w: 420, text: "unclebstudio.com", size: 30, weight: 400, color: MUTED, align: "right" }),
   ];
   const meta = (kicker: string, page: string): TextEl[] => [
-    newText({ x: 96, y: 110, w: 600, text: kicker, size: 28, weight: 800, color: CORAL, letterSpacing: 4 }),
-    newText({ x: 480, y: 110, w: 504, text: page, size: 28, weight: 600, color: MUD, align: "right", letterSpacing: 2 }),
+    newText({ x: 96, y: 110, w: 600, text: kicker, size: 28, weight: 800, color: ACCENT, letterSpacing: 4 }),
+    newText({ x: 480, y: 110, w: 504, text: page, size: 28, weight: 600, color: MUTED, align: "right", letterSpacing: 2 }),
   ];
 
   return [
@@ -402,31 +388,30 @@ function buildTemplates(): Template[] {
       name: "커버 (다이어리)",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
-          newText({ x: 540, y: 280, w: 520, text: "01", size: 420, weight: 900, color: "#E4DCC9", align: "left" }),
+          newText({ x: 540, y: 280, w: 520, text: "01", size: 420, weight: 900, color: "#DEE8FB", align: "left" }),
           ...meta("A DIARY · EP.01", "01 — 09"),
           newText({ x: 96, y: 430, w: 920, text: "오늘부터,", size: 130, weight: 900, color: NAVY, lineHeight: 1.05 }),
-          newText({ x: 96, y: 580, w: 920, text: "진짜 시작.", size: 130, weight: 900, color: CORAL, lineHeight: 1.05 }),
-          newText({ x: 96, y: 820, w: 880, text: "AI로 돈 버는 이야기 — 솔직 후기", size: 38, weight: 500, color: "#5A554A" }),
+          newText({ x: 96, y: 580, w: 920, text: "진짜 시작.", size: 130, weight: 900, color: ACCENT, lineHeight: 1.05 }),
+          newText({ x: 96, y: 820, w: 880, text: "AI로 돈 버는 이야기 — 솔직 후기", size: 38, weight: 500, color: "#56627D" }),
           ...footer(),
         ],
       },
     },
     {
       id: "tpl-body",
-      name: "본문 + 캐릭터",
+      name: "본문",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
-          newText({ x: 540, y: 300, w: 520, text: "02", size: 420, weight: 900, color: "#E4DCC9" }),
+          newText({ x: 540, y: 300, w: 520, text: "02", size: 420, weight: 900, color: "#DEE8FB" }),
           ...meta("HOW I STARTED", "02 — 09"),
-          newText({ x: 96, y: 360, w: 640, text: "뒤처지기", size: 116, weight: 900, color: NAVY, lineHeight: 1.06 }),
-          newText({ x: 96, y: 488, w: 640, text: "싫었어.", size: 116, weight: 900, color: CORAL, lineHeight: 1.06 }),
-          newText({ x: 96, y: 700, w: 600, text: "회사에서 살아남아야 했고,\n1% 확률이라도 잡고 싶었거든.\n그래서 시작했어.", size: 36, weight: 500, color: "#5A554A", lineHeight: 1.5 }),
-          img(CHAR_ASSETS[0].url, 700, 560, CHAR_ASSETS[0].w, CHAR_ASSETS[0].h),
-          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: CORAL }),
+          newText({ x: 96, y: 360, w: 880, text: "뒤처지기", size: 116, weight: 900, color: NAVY, lineHeight: 1.06 }),
+          newText({ x: 96, y: 488, w: 880, text: "싫었어.", size: 116, weight: 900, color: ACCENT, lineHeight: 1.06 }),
+          newText({ x: 96, y: 720, w: 880, text: "회사에서 살아남아야 했고,\n1% 확률이라도 잡고 싶었거든.\n그래서 시작했어.", size: 38, weight: 500, color: "#56627D", lineHeight: 1.5 }),
+          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: ACCENT }),
           ...footer(),
         ],
       },
@@ -436,12 +421,12 @@ function buildTemplates(): Template[] {
       name: "프롬프트 카드",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
           ...meta("PROMPT 01 · VOICE CARD", "03 — 09"),
           newText({ x: 96, y: 300, w: 880, text: "내 톤을\n카드 한 장으로.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
           rrect(96, 660, 888, 420, DARK, 28),
-          newText({ x: 140, y: 700, w: 800, text: "PROMPT", size: 22, weight: 700, color: CORAL, letterSpacing: 3 }),
+          newText({ x: 140, y: 700, w: 800, text: "PROMPT", size: 22, weight: 700, color: ACCENT, letterSpacing: 3 }),
           newText({
             x: 140,
             y: 748,
@@ -449,11 +434,11 @@ function buildTemplates(): Template[] {
             text: "Analyze these 5 pieces of my writing.\nExtract my voice — tone, rhythm, vocabulary.\nReturn a reusable Voice Card.",
             size: 27,
             weight: 400,
-            color: "#E7E3D8",
+            color: "#DCE6FA",
             lineHeight: 1.5,
             fontFamily: FONT_MONO,
           }),
-          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: CORAL }),
+          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: ACCENT }),
           ...footer(),
         ],
       },
@@ -463,16 +448,16 @@ function buildTemplates(): Template[] {
       name: "비교 (전·후)",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
           ...meta("THE DIFFERENCE", "04 — 09"),
           newText({ x: 96, y: 230, w: 880, text: "이렇게\n달라졌어.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
-          rrect(96, 560, 420, 540, "#E3DBC8", 28),
+          rrect(96, 560, 420, 540, "#DCE7FB", 28),
           newText({ x: 140, y: 600, w: 340, text: "기존 방식", size: 40, weight: 800, color: NAVY }),
-          newText({ x: 140, y: 680, w: 340, text: "혼자 끙끙 앓으며\n시간만 흘려보냄.", size: 30, weight: 500, color: "#5A554A", lineHeight: 1.45 }),
+          newText({ x: 140, y: 680, w: 340, text: "혼자 끙끙 앓으며\n시간만 흘려보냄.", size: 30, weight: 500, color: "#56627D", lineHeight: 1.45 }),
           rrect(564, 560, 420, 540, DARK, 28),
-          newText({ x: 608, y: 600, w: 340, text: "지금", size: 40, weight: 800, color: CORAL }),
-          newText({ x: 608, y: 680, w: 340, text: "AI와 분업해\n반나절에 끝냄.", size: 30, weight: 500, color: "#F1ECDF", lineHeight: 1.45 }),
+          newText({ x: 608, y: 600, w: 340, text: "지금", size: 40, weight: 800, color: ACCENT }),
+          newText({ x: 608, y: 680, w: 340, text: "AI와 분업해\n반나절에 끝냄.", size: 30, weight: 500, color: "#DCE6FA", lineHeight: 1.45 }),
           ...footer(),
         ],
       },
@@ -482,7 +467,7 @@ function buildTemplates(): Template[] {
       name: "리스트 (체크)",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
           ...meta("WHAT YOU GET", "05 — 09"),
           newText({ x: 96, y: 250, w: 880, text: "이게 다\n들어있어.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
@@ -490,7 +475,7 @@ function buildTemplates(): Template[] {
             const y = 560 + i * 150;
             const labels = ["전체 라이브러리", "카테고리별 정리본", "복붙용 프롬프트", "업데이트 무료"];
             return [
-              { id: uid("s"), kind: "shape", x: 96, y: y + 8, w: 22, h: 22, shape: "ellipse", fill: CORAL, radius: 0 } as ShapeEl,
+              { id: uid("s"), kind: "shape", x: 96, y: y + 8, w: 22, h: 22, shape: "ellipse", fill: ACCENT, radius: 0 } as ShapeEl,
               newText({ x: 150, y, w: 800, text: `${pad2(i + 1)}  ${labels[i]}`, size: 44, weight: 700, color: NAVY }),
             ];
           }),
@@ -503,15 +488,15 @@ function buildTemplates(): Template[] {
       name: "엔딩 CTA",
       slide: {
         id: uid("sl"),
-        background: { color: CREAM },
+        background: { color: PAPER },
         elements: [
           ...meta("BUILD WITH ME", "09 — 09"),
           newText({ x: 96, y: 360, w: 760, text: "같이,", size: 130, weight: 900, color: NAVY, lineHeight: 1.04 }),
-          newText({ x: 96, y: 500, w: 760, text: "가볼래?", size: 130, weight: 900, color: CORAL, lineHeight: 1.04 }),
-          newText({ x: 760, y: 470, w: 200, text: "✦", size: 110, weight: 900, color: CORAL }),
+          newText({ x: 96, y: 500, w: 760, text: "가볼래?", size: 130, weight: 900, color: ACCENT, lineHeight: 1.04 }),
+          newText({ x: 760, y: 470, w: 200, text: "✦", size: 110, weight: 900, color: ACCENT }),
           rrect(96, 780, 888, 150, DARK, 75),
-          newText({ x: 96, y: 822, w: 888, text: "@moongi_adventures", size: 48, weight: 800, color: "#FFFFFF", align: "center" }),
-          newText({ x: 96, y: 985, w: 888, text: "— end of ep.09 —", size: 30, weight: 500, italic: true, color: MUD, align: "center" }),
+          newText({ x: 96, y: 822, w: 888, text: "@uncleb_studio", size: 48, weight: 800, color: "#FFFFFF", align: "center" }),
+          newText({ x: 96, y: 985, w: 888, text: "— end of ep.09 —", size: 30, weight: 500, italic: true, color: MUTED, align: "center" }),
           ...footer(),
         ],
       },
@@ -704,17 +689,9 @@ export function InstaCarousel() {
     [addElement],
   );
 
-  /** 번들 에셋(캐릭터) 삽입 */
-  const insertAsset = useCallback(
-    (url: string, w: number, h: number) => {
-      addElement({ id: uid("i"), kind: "image", x: Math.round((SLIDE_W - w) / 2), y: 500, w, h, url, fit: "contain", radius: 0 });
-    },
-    [addElement],
-  );
-
   /** 빠른 텍스트 에셋(반짝이 등) */
   const insertGlyph = useCallback(
-    (text: string) => addElement(newText({ text, x: 480, y: 480, w: 220, size: 120, weight: 900, color: CORAL, align: "center" })),
+    (text: string) => addElement(newText({ text, x: 480, y: 480, w: 220, size: 120, weight: 900, color: ACCENT, align: "center" })),
     [addElement],
   );
 
@@ -900,7 +877,7 @@ export function InstaCarousel() {
       // id 재발급(충돌 방지) + 최소 보정
       const slides: Slide[] = p.slides.map((s) => ({
         id: uid("sl"),
-        background: (s as Slide).background ?? { color: "#EDE6D4" },
+        background: (s as Slide).background ?? { color: "#EEF3FC" },
         elements: Array.isArray((s as Slide).elements)
           ? (s as Slide).elements.map((e) => ({ ...e, id: uid("el") }) as AnyEl)
           : [],
@@ -1002,7 +979,7 @@ export function InstaCarousel() {
             <button type="button" className={styles.addSlide} onClick={addSlide}>+ 슬라이드 추가</button>
           </div>
 
-          <div className={styles.panelHead}>기본 템플릿 · 뭉이</div>
+          <div className={styles.panelHead}>기본 템플릿 · 엉클비</div>
           <div className={styles.tplList}>
             {BUILTIN_TEMPLATES.map((t) => (
               <button key={t.id} type="button" className={styles.tplApply} onClick={() => applyTemplate(t)} title="새 슬라이드로 추가">
@@ -1011,15 +988,7 @@ export function InstaCarousel() {
             ))}
           </div>
 
-          <div className={styles.panelHead}>에셋 · 뭉이 캐릭터</div>
-          <div className={styles.assetGrid}>
-            {CHAR_ASSETS.map((a) => (
-              <button key={a.id} type="button" className={styles.assetBtn} onClick={() => insertAsset(a.url, a.w, a.h)} title={a.label}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.url} alt={a.label} />
-              </button>
-            ))}
-          </div>
+          <div className={styles.panelHead}>에셋</div>
           <div className={styles.row}>
             <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("✦")}>✦ 반짝이</button>
             <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("→")}>→ 화살표</button>
@@ -1186,7 +1155,7 @@ const SlideStage = forwardRef<
     <div
       ref={ref}
       className={styles.slide}
-      style={{ background: bg.color ?? "#EDE6D4" }}
+      style={{ background: bg.color ?? "#EEF3FC" }}
       onPointerDown={(e) => {
         if (editable && e.target === e.currentTarget) onBackgroundClick?.();
       }}
@@ -1667,7 +1636,7 @@ function TextInspector({ el, onChange }: { el: TextEl; onChange: (p: Partial<Tex
         <button
           type="button"
           className={`${styles.miniBtn} ${el.highlight ? styles.miniBtnOn : ""}`}
-          onClick={() => onChange({ highlight: el.highlight ? undefined : "#F4C84A" })}
+          onClick={() => onChange({ highlight: el.highlight ? undefined : "#BBD5FF" })}
         >
           형광펜
         </button>
@@ -1714,12 +1683,12 @@ function ShapeInspector({ el, onChange }: { el: ShapeEl; onChange: (p: Partial<S
         <option value="ellipse">원/타원</option>
         <option value="line">선</option>
       </select>
-      <ColorField label="채움색" value={el.fill ?? "#15151A"} onChange={(v) => onChange({ fill: v })} />
+      <ColorField label="채움색" value={el.fill ?? "#0F1F3D"} onChange={(v) => onChange({ fill: v })} />
       {el.shape === "roundRect" && (
         <NumField label="모서리 둥글기" value={el.radius} onChange={(v) => onChange({ radius: Math.max(0, v) })} />
       )}
       <div className={styles.fieldGrid}>
-        <ColorField label="테두리색" value={el.strokeColor ?? "#1B1B22"} onChange={(v) => onChange({ strokeColor: v })} />
+        <ColorField label="테두리색" value={el.strokeColor ?? "#17233E"} onChange={(v) => onChange({ strokeColor: v })} />
         <NumField label="테두리 두께" value={el.strokeWidth ?? 0} onChange={(v) => onChange({ strokeWidth: Math.max(0, v) })} />
       </div>
     </>
@@ -1744,7 +1713,7 @@ function BackgroundInspector({
       <div className={styles.muted}>요소를 선택하면 그 요소 속성이 보여요.</div>
 
       <label className={styles.fieldLabel}>배경색</label>
-      <ColorField label="" value={background.color ?? "#EDE6D4"} onChange={(v) => onChange({ color: v })} inline />
+      <ColorField label="" value={background.color ?? "#EEF3FC"} onChange={(v) => onChange({ color: v })} inline />
       <div className={styles.swatches}>
         {PALETTE.map((c) => (
           <button key={c} type="button" className={styles.swatch} style={{ background: c }} onClick={() => onChange({ color: c })} aria-label={c} />

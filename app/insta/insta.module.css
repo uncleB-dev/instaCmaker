@@ -1,5 +1,5 @@
 /* ============================================================
-   instaCmaker — 뭉이 캔버스 스튜디오 스타일
+   instaCmaker — 엉클비 캔버스 스튜디오 스타일
    다크 관리 크롬 + 1080×1350 슬라이드 캔버스
    ============================================================ */
 
@@ -13,8 +13,8 @@
   --ink-3: #71717a;
   --line: rgba(255, 255, 255, 0.1);
   --line-2: rgba(255, 255, 255, 0.16);
-  --brand: #e8553a;
-  --brand-2: #f4c84a;
+  --brand: #2f6bff;
+  --brand-2: #1e4fd0;
 
   position: fixed;
   inset: 0;
@@ -73,7 +73,7 @@
   color: #fff;
   font-weight: 700;
 }
-.btnPrimary:hover { background: #d6492f; }
+.btnPrimary:hover { background: #1e4fd0; }
 .btn:disabled,
 .btnPrimary:disabled { opacity: 0.5; cursor: default; }
 
@@ -279,7 +279,7 @@
   height: 1350px;
   box-sizing: border-box;
   overflow: hidden;
-  color: #1b1b22;
+  color: #17233e;
   font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif;
 }
 .bgImage {
