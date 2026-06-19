@@ -295,7 +295,7 @@ function cloneSlide(slide: Slide, freshId = true): Slide {
   return {
     id: freshId ? uid("sl") : slide.id,
     background: { ...slide.background, image: slide.background.image ? { ...slide.background.image } : undefined },
-    elements: slide.elements.map((e) => ({ ...e })),
+    elements: slide.elements.map((e) => ({ ...e, id: uid(e.kind[0]) })),
   };
 }
 
@@ -356,6 +356,168 @@ function makeDefaultProject(): Project {
 }
 
 /* ============================================================
+   번들 에셋 (뭉이 캐릭터 컷아웃) · 빠른 삽입용
+   ============================================================ */
+const CHAR_ASSETS: { id: string; label: string; url: string; w: number; h: number }[] = [
+  { id: "think", label: "생각", url: "/assets/characters/moongi-think.png", w: 320, h: 546 },
+  { id: "work", label: "작업", url: "/assets/characters/moongi-work.png", w: 360, h: 556 },
+  { id: "confident", label: "자신감", url: "/assets/characters/moongi-confident.png", w: 330, h: 553 },
+  { id: "down", label: "풀죽음", url: "/assets/characters/moongi-down.png", w: 340, h: 497 },
+  { id: "present", label: "소개", url: "/assets/characters/moongi-present.png", w: 350, h: 568 },
+];
+
+/* ============================================================
+   기본 템플릿 (뭉이 스타일) — 적용 시 새 슬라이드로 추가(요소 id 재발급)
+   ============================================================ */
+const CREAM = "#EDE6D4";
+const NAVY = "#1B1B22";
+const CORAL = "#E8553A";
+const MUD = "#8A8577";
+const DARK = "#15151A";
+
+function img(url: string, x: number, y: number, w: number, h: number): ImageEl {
+  return { id: uid("i"), kind: "image", x, y, w, h, url, fit: "contain", radius: 0 };
+}
+function rrect(x: number, y: number, w: number, h: number, fill: string, radius = 28): ShapeEl {
+  return { id: uid("s"), kind: "shape", x, y, w, h, shape: "roundRect", fill, radius };
+}
+
+function buildTemplates(): Template[] {
+  const footer = (handle = "@moongi_adventures"): TextEl[] => [
+    newText({ x: 96, y: 1262, w: 520, text: handle, size: 30, weight: 700, color: MUD }),
+    newText({ x: 564, y: 1262, w: 420, text: "moongi studio", size: 30, weight: 400, color: MUD, align: "right" }),
+  ];
+  const meta = (kicker: string, page: string): TextEl[] => [
+    newText({ x: 96, y: 110, w: 600, text: kicker, size: 28, weight: 800, color: CORAL, letterSpacing: 4 }),
+    newText({ x: 480, y: 110, w: 504, text: page, size: 28, weight: 600, color: MUD, align: "right", letterSpacing: 2 }),
+  ];
+
+  return [
+    {
+      id: "tpl-cover",
+      name: "커버 (다이어리)",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          newText({ x: 540, y: 280, w: 520, text: "01", size: 420, weight: 900, color: "#E4DCC9", align: "left" }),
+          ...meta("A DIARY · EP.01", "01 — 09"),
+          newText({ x: 96, y: 430, w: 920, text: "오늘부터,", size: 130, weight: 900, color: NAVY, lineHeight: 1.05 }),
+          newText({ x: 96, y: 580, w: 920, text: "진짜 시작.", size: 130, weight: 900, color: CORAL, lineHeight: 1.05 }),
+          newText({ x: 96, y: 820, w: 880, text: "AI로 돈 버는 이야기 — 솔직 후기", size: 38, weight: 500, color: "#5A554A" }),
+          ...footer(),
+        ],
+      },
+    },
+    {
+      id: "tpl-body",
+      name: "본문 + 캐릭터",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          newText({ x: 540, y: 300, w: 520, text: "02", size: 420, weight: 900, color: "#E4DCC9" }),
+          ...meta("HOW I STARTED", "02 — 09"),
+          newText({ x: 96, y: 360, w: 640, text: "뒤처지기", size: 116, weight: 900, color: NAVY, lineHeight: 1.06 }),
+          newText({ x: 96, y: 488, w: 640, text: "싫었어.", size: 116, weight: 900, color: CORAL, lineHeight: 1.06 }),
+          newText({ x: 96, y: 700, w: 600, text: "회사에서 살아남아야 했고,\n1% 확률이라도 잡고 싶었거든.\n그래서 시작했어.", size: 36, weight: 500, color: "#5A554A", lineHeight: 1.5 }),
+          img(CHAR_ASSETS[0].url, 700, 560, CHAR_ASSETS[0].w, CHAR_ASSETS[0].h),
+          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: CORAL }),
+          ...footer(),
+        ],
+      },
+    },
+    {
+      id: "tpl-prompt",
+      name: "프롬프트 카드",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          ...meta("PROMPT 01 · VOICE CARD", "03 — 09"),
+          newText({ x: 96, y: 300, w: 880, text: "내 톤을\n카드 한 장으로.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
+          rrect(96, 660, 888, 420, DARK, 28),
+          newText({ x: 140, y: 700, w: 800, text: "PROMPT", size: 22, weight: 700, color: CORAL, letterSpacing: 3 }),
+          newText({
+            x: 140,
+            y: 748,
+            w: 800,
+            text: "Analyze these 5 pieces of my writing.\nExtract my voice — tone, rhythm, vocabulary.\nReturn a reusable Voice Card.",
+            size: 27,
+            weight: 400,
+            color: "#E7E3D8",
+            lineHeight: 1.5,
+            fontFamily: FONT_MONO,
+          }),
+          newText({ x: 96, y: 1130, w: 500, text: "swipe to read →", size: 28, weight: 600, italic: true, color: CORAL }),
+          ...footer(),
+        ],
+      },
+    },
+    {
+      id: "tpl-compare",
+      name: "비교 (전·후)",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          ...meta("THE DIFFERENCE", "04 — 09"),
+          newText({ x: 96, y: 230, w: 880, text: "이렇게\n달라졌어.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
+          rrect(96, 560, 420, 540, "#E3DBC8", 28),
+          newText({ x: 140, y: 600, w: 340, text: "기존 방식", size: 40, weight: 800, color: NAVY }),
+          newText({ x: 140, y: 680, w: 340, text: "혼자 끙끙 앓으며\n시간만 흘려보냄.", size: 30, weight: 500, color: "#5A554A", lineHeight: 1.45 }),
+          rrect(564, 560, 420, 540, DARK, 28),
+          newText({ x: 608, y: 600, w: 340, text: "지금", size: 40, weight: 800, color: CORAL }),
+          newText({ x: 608, y: 680, w: 340, text: "AI와 분업해\n반나절에 끝냄.", size: 30, weight: 500, color: "#F1ECDF", lineHeight: 1.45 }),
+          ...footer(),
+        ],
+      },
+    },
+    {
+      id: "tpl-list",
+      name: "리스트 (체크)",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          ...meta("WHAT YOU GET", "05 — 09"),
+          newText({ x: 96, y: 250, w: 880, text: "이게 다\n들어있어.", size: 96, weight: 900, color: NAVY, lineHeight: 1.08 }),
+          ...[0, 1, 2, 3].flatMap((i) => {
+            const y = 560 + i * 150;
+            const labels = ["전체 라이브러리", "카테고리별 정리본", "복붙용 프롬프트", "업데이트 무료"];
+            return [
+              { id: uid("s"), kind: "shape", x: 96, y: y + 8, w: 22, h: 22, shape: "ellipse", fill: CORAL, radius: 0 } as ShapeEl,
+              newText({ x: 150, y, w: 800, text: `${pad2(i + 1)}  ${labels[i]}`, size: 44, weight: 700, color: NAVY }),
+            ];
+          }),
+          ...footer(),
+        ],
+      },
+    },
+    {
+      id: "tpl-cta",
+      name: "엔딩 CTA",
+      slide: {
+        id: uid("sl"),
+        background: { color: CREAM },
+        elements: [
+          ...meta("BUILD WITH ME", "09 — 09"),
+          newText({ x: 96, y: 360, w: 760, text: "같이,", size: 130, weight: 900, color: NAVY, lineHeight: 1.04 }),
+          newText({ x: 96, y: 500, w: 760, text: "가볼래?", size: 130, weight: 900, color: CORAL, lineHeight: 1.04 }),
+          newText({ x: 760, y: 470, w: 200, text: "✦", size: 110, weight: 900, color: CORAL }),
+          rrect(96, 780, 888, 150, DARK, 75),
+          newText({ x: 96, y: 822, w: 888, text: "@moongi_adventures", size: 48, weight: 800, color: "#FFFFFF", align: "center" }),
+          newText({ x: 96, y: 985, w: 888, text: "— end of ep.09 —", size: 30, weight: 500, italic: true, color: MUD, align: "center" }),
+          ...footer(),
+        ],
+      },
+    },
+  ];
+}
+
+const BUILTIN_TEMPLATES = buildTemplates();
+
+/* ============================================================
    localStorage 직렬화 (가벼운 검증)
    ============================================================ */
 function loadProject(): Project | null {
@@ -393,6 +555,8 @@ export function InstaCarousel() {
   const [error, setError] = useState("");
   const [configText, setConfigText] = useState("");
   const [showJson, setShowJson] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [snap, setSnap] = useState<{ vx?: number; hy?: number } | null>(null);
   const hydrated = useRef(false);
 
   /* 마운트 시 localStorage 로드 (SSR 하이드레이션 안전: effect 에서) */
@@ -533,6 +697,20 @@ export function InstaCarousel() {
         setError("이미지를 불러오지 못했어요.");
       }
     },
+    [addElement],
+  );
+
+  /** 번들 에셋(캐릭터) 삽입 */
+  const insertAsset = useCallback(
+    (url: string, w: number, h: number) => {
+      addElement({ id: uid("i"), kind: "image", x: Math.round((SLIDE_W - w) / 2), y: 500, w, h, url, fit: "contain", radius: 0 });
+    },
+    [addElement],
+  );
+
+  /** 빠른 텍스트 에셋(반짝이 등) */
+  const insertGlyph = useCallback(
+    (text: string) => addElement(newText({ text, x: 480, y: 480, w: 220, size: 120, weight: 900, color: CORAL, align: "center" })),
     [addElement],
   );
 
@@ -800,6 +978,7 @@ export function InstaCarousel() {
                 onClick={() => {
                   setCurrentId(s.id);
                   setSelectedId(null);
+                  setEditingId(null);
                 }}
               >
                 <div className={styles.slideThumbNo}>{i + 1}</div>
@@ -817,6 +996,29 @@ export function InstaCarousel() {
               </div>
             ))}
             <button type="button" className={styles.addSlide} onClick={addSlide}>+ 슬라이드 추가</button>
+          </div>
+
+          <div className={styles.panelHead}>기본 템플릿 · 뭉이</div>
+          <div className={styles.tplList}>
+            {BUILTIN_TEMPLATES.map((t) => (
+              <button key={t.id} type="button" className={styles.tplApply} onClick={() => applyTemplate(t)} title="새 슬라이드로 추가">
+                {t.name}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.panelHead}>에셋 · 뭉이 캐릭터</div>
+          <div className={styles.assetGrid}>
+            {CHAR_ASSETS.map((a) => (
+              <button key={a.id} type="button" className={styles.assetBtn} onClick={() => insertAsset(a.url, a.w, a.h)} title={a.label}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.url} alt={a.label} />
+              </button>
+            ))}
+          </div>
+          <div className={styles.row}>
+            <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("✦")}>✦ 반짝이</button>
+            <button type="button" className={styles.miniBtn} onClick={() => insertGlyph("→")}>→ 화살표</button>
           </div>
 
           <div className={styles.panelHead}>내 템플릿</div>
@@ -873,9 +1075,14 @@ export function InstaCarousel() {
                   slide={current}
                   editable
                   selectedId={selectedId}
-                  onSelect={setSelectedId}
+                  editingId={editingId}
+                  snap={snap}
+                  onSelect={(id) => { setSelectedId(id); if (id !== editingId) setEditingId(null); }}
                   onChangeElement={updateElement}
-                  onBackgroundClick={() => setSelectedId(null)}
+                  onBackgroundClick={() => { setSelectedId(null); setEditingId(null); }}
+                  onStartEdit={(id) => { setSelectedId(id); setEditingId(id); }}
+                  onEndEdit={() => setEditingId(null)}
+                  onSnap={setSnap}
                 />
               </div>
             </div>
@@ -945,11 +1152,31 @@ const SlideStage = forwardRef<
     slide: Slide;
     editable: boolean;
     selectedId?: string | null;
+    editingId?: string | null;
+    snap?: { vx?: number; hy?: number } | null;
     onSelect?: (id: string | null) => void;
     onChangeElement?: (id: string, patch: Partial<AnyEl>) => void;
     onBackgroundClick?: () => void;
+    onStartEdit?: (id: string) => void;
+    onEndEdit?: () => void;
+    onSnap?: (s: { vx?: number; hy?: number } | null) => void;
   }
->(function SlideStage({ slide, editable, selectedId, onSelect, onChangeElement, onBackgroundClick }, ref) {
+>(function SlideStage(
+  {
+    slide,
+    editable,
+    selectedId,
+    editingId,
+    snap,
+    onSelect,
+    onChangeElement,
+    onBackgroundClick,
+    onStartEdit,
+    onEndEdit,
+    onSnap,
+  },
+  ref,
+) {
   const bg = slide.background;
   return (
     <div
@@ -982,10 +1209,21 @@ const SlideStage = forwardRef<
           el={el}
           editable={editable}
           selected={editable && el.id === selectedId}
+          editing={editable && el.id === editingId}
           onSelect={onSelect}
           onChange={onChangeElement ? (patch) => onChangeElement(el.id, patch) : undefined}
+          onStartEdit={onStartEdit}
+          onEndEdit={onEndEdit}
+          onSnap={onSnap}
         />
       ))}
+
+      {editable && snap?.vx != null ? (
+        <div className={styles.guideV} style={{ left: snap.vx }} aria-hidden />
+      ) : null}
+      {editable && snap?.hy != null ? (
+        <div className={styles.guideH} style={{ top: snap.hy }} aria-hidden />
+      ) : null}
     </div>
   );
 });
@@ -993,21 +1231,43 @@ const SlideStage = forwardRef<
 /* ============================================================
    ElementBox — 요소 위치/드래그/리사이즈 래퍼 + 내용 렌더
    ============================================================ */
+type Dir = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
+const DIRS: Dir[] = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+const DIR_CLASS: Record<Dir, string> = {
+  nw: styles.hNW,
+  n: styles.hN,
+  ne: styles.hNE,
+  e: styles.hE,
+  se: styles.hSE,
+  s: styles.hS,
+  sw: styles.hSW,
+  w: styles.hW,
+};
+
 function ElementBox({
   el,
   editable,
   selected,
+  editing,
   onSelect,
   onChange,
+  onStartEdit,
+  onEndEdit,
+  onSnap,
 }: {
   el: AnyEl;
   editable: boolean;
   selected: boolean;
+  editing?: boolean;
   onSelect?: (id: string | null) => void;
   onChange?: (patch: Partial<AnyEl>) => void;
+  onStartEdit?: (id: string) => void;
+  onEndEdit?: () => void;
+  onSnap?: (s: { vx?: number; hy?: number } | null) => void;
 }) {
   const gesture = useRef<{
-    mode: "move" | "resize";
+    mode: "move" | "resize" | "rotate";
+    dir?: Dir;
     scale: number;
     startX: number;
     startY: number;
@@ -1015,6 +1275,10 @@ function ElementBox({
     oy: number;
     ow: number;
     oh: number;
+    cx: number;
+    cy: number;
+    a0: number;
+    r0: number;
   } | null>(null);
 
   const isText = el.kind === "text";
@@ -1031,44 +1295,103 @@ function ElementBox({
       if (!g || !onChange) return;
       const dx = (e.clientX - g.startX) / g.scale;
       const dy = (e.clientY - g.startY) / g.scale;
+
+      if (g.mode === "rotate") {
+        const ang = (Math.atan2(e.clientY - g.cy, e.clientX - g.cx) - g.a0) * (180 / Math.PI);
+        onChange({ rotation: Math.round(g.r0 + ang) });
+        return;
+      }
+
       if (g.mode === "move") {
-        onChange({
-          x: Math.round(clamp(g.ox + dx, -g.ow + 40, SLIDE_W - 40)),
-          y: Math.round(clamp(g.oy + dy, -g.oh + 24, SLIDE_H - 24)),
-        });
-      } else if (isText) {
-        onChange({ w: Math.round(clamp(g.ow + dx, MIN_W, SLIDE_W)) });
+        let nx = g.ox + dx;
+        let ny = g.oy + dy;
+        // 스냅: 캔버스 좌/중앙/우 · 상/중앙/하
+        const TH = 8;
+        let vx: number | undefined;
+        let hy: number | undefined;
+        const xs = [nx, nx + g.ow / 2, nx + g.ow];
+        const tx = [0, SLIDE_W / 2, SLIDE_W];
+        for (const t of tx) {
+          const k = xs.findIndex((v) => Math.abs(v - t) <= TH);
+          if (k >= 0) {
+            nx += t - xs[k];
+            vx = t;
+            break;
+          }
+        }
+        const ys = [ny, ny + g.oh / 2, ny + g.oh];
+        const ty = [0, SLIDE_H / 2, SLIDE_H];
+        for (const t of ty) {
+          const k = ys.findIndex((v) => Math.abs(v - t) <= TH);
+          if (k >= 0) {
+            ny += t - ys[k];
+            hy = t;
+            break;
+          }
+        }
+        nx = clamp(nx, -g.ow + 40, SLIDE_W - 40);
+        ny = clamp(ny, -g.oh + 24, SLIDE_H - 24);
+        onChange({ x: Math.round(nx), y: Math.round(ny) });
+        onSnap?.(vx != null || hy != null ? { vx, hy } : null);
+        return;
+      }
+
+      // resize
+      const d = g.dir!;
+      let nx = g.ox;
+      let ny = g.oy;
+      let nw = g.ow;
+      let nh = g.oh;
+      if (d.includes("e")) nw = g.ow + dx;
+      if (d.includes("w")) nw = g.ow - dx;
+      if (d.includes("s")) nh = g.oh + dy;
+      if (d.includes("n")) nh = g.oh - dy;
+      nw = Math.max(MIN_W, nw);
+      nh = Math.max(MIN_H, nh);
+      if (d.includes("w")) nx = g.ox + (g.ow - nw);
+      if (d.includes("n")) ny = g.oy + (g.oh - nh);
+
+      if (isText) {
+        // 텍스트는 폭만(높이 auto). 좌측 핸들이면 x도 함께.
+        const patch: Partial<TextEl> = { w: Math.round(nw) };
+        if (d.includes("w")) patch.x = Math.round(nx);
+        onChange(patch);
       } else {
-        onChange({
-          w: Math.round(clamp(g.ow + dx, MIN_W, SLIDE_W * 1.2)),
-          h: Math.round(clamp(g.oh + dy, MIN_H, SLIDE_H * 1.2)),
-        });
+        onChange({ x: Math.round(nx), y: Math.round(ny), w: Math.round(nw), h: Math.round(nh) });
       }
     },
-    [onChange, isText],
+    [onChange, onSnap, isText],
   );
 
-  const endGesture = useCallback((e: ReactPointerEvent<HTMLElement>) => {
-    gesture.current = null;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {
-      /* noop */
-    }
-  }, []);
+  const endGesture = useCallback(
+    (e: ReactPointerEvent<HTMLElement>) => {
+      gesture.current = null;
+      onSnap?.(null);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* noop */
+      }
+    },
+    [onSnap],
+  );
 
-  const start = useCallback(
-    (mode: "move" | "resize") => (e: ReactPointerEvent<HTMLElement>) => {
-      if (!editable) return;
-      if (mode === "resize") e.stopPropagation();
+  const begin = useCallback(
+    (mode: "move" | "resize" | "rotate", dir?: Dir) => (e: ReactPointerEvent<HTMLElement>) => {
+      if (!editable || editing) return;
+      if (mode !== "move") e.stopPropagation();
       e.preventDefault();
       onSelect?.(el.id);
       if (el.locked || !onChange) return;
       const node = e.currentTarget;
-      const rect = node.closest(`.${CSS.escape(styles.elBox)}`)?.getBoundingClientRect();
+      const box = node.closest(`.${CSS.escape(styles.elBox)}`) as HTMLElement | null;
+      const rect = box?.getBoundingClientRect();
       const scale = measureScale(node);
+      const cx = rect ? rect.left + rect.width / 2 : e.clientX;
+      const cy = rect ? rect.top + rect.height / 2 : e.clientY;
       gesture.current = {
         mode,
+        dir,
         scale,
         startX: e.clientX,
         startY: e.clientY,
@@ -1076,6 +1399,10 @@ function ElementBox({
         oy: el.y,
         ow: el.w || (rect ? rect.width / scale : 200),
         oh: el.h || (rect ? rect.height / scale : 100),
+        cx,
+        cy,
+        a0: Math.atan2(e.clientY - cy, e.clientX - cx),
+        r0: el.rotation ?? 0,
       };
       try {
         node.setPointerCapture(e.pointerId);
@@ -1083,7 +1410,7 @@ function ElementBox({
         /* noop */
       }
     },
-    [editable, el, measureScale, onChange, onSelect],
+    [editable, editing, el, measureScale, onChange, onSelect],
   );
 
   const style: React.CSSProperties = {
@@ -1102,25 +1429,58 @@ function ElementBox({
     );
   }
 
+  const handleProps = (dir?: Dir) => ({
+    onPointerDown: begin(dir ? "resize" : "move", dir),
+    onPointerMove,
+    onPointerUp: endGesture,
+    onPointerCancel: endGesture,
+  });
+
   return (
     <div
       className={`${styles.elBox} ${styles.elEditable} ${selected ? styles.elSelected : ""} ${el.locked ? styles.elLocked : ""}`}
       style={style}
-      onPointerDown={start("move")}
-      onPointerMove={onPointerMove}
-      onPointerUp={endGesture}
-      onPointerCancel={endGesture}
+      onPointerDown={editing ? undefined : begin("move")}
+      onPointerMove={editing ? undefined : onPointerMove}
+      onPointerUp={editing ? undefined : endGesture}
+      onPointerCancel={editing ? undefined : endGesture}
+      onDoubleClick={
+        isText && !el.locked && onStartEdit ? (e) => { e.stopPropagation(); onStartEdit(el.id); } : undefined
+      }
     >
-      <ElementContent el={el} />
-      {selected && !el.locked && (
-        <span
-          className={styles.handle}
-          aria-hidden
-          onPointerDown={start("resize")}
-          onPointerMove={onPointerMove}
-          onPointerUp={endGesture}
-          onPointerCancel={endGesture}
+      {editing && isText ? (
+        <textarea
+          className={styles.textEditor}
+          autoFocus
+          value={el.text}
+          onChange={(e) => onChange?.({ text: e.target.value })}
+          onBlur={() => onEndEdit?.()}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") onEndEdit?.();
+          }}
+          style={{
+            fontFamily: el.fontFamily,
+            fontSize: el.size,
+            fontWeight: el.weight,
+            fontStyle: el.italic ? "italic" : "normal",
+            color: el.color,
+            textAlign: el.align,
+            lineHeight: el.lineHeight,
+            letterSpacing: el.letterSpacing,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
         />
+      ) : (
+        <ElementContent el={el} />
+      )}
+
+      {selected && !el.locked && !editing && (
+        <>
+          <span className={`${styles.handle} ${styles.hRot}`} aria-hidden {...handleProps()} onPointerDown={begin("rotate")} />
+          {DIRS.map((d) => (
+            <span key={d} className={`${styles.handle} ${DIR_CLASS[d]}`} aria-hidden {...handleProps(d)} />
+          ))}
+        </>
       )}
     </div>
   );
