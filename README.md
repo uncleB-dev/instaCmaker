@@ -1,5 +1,11 @@
 # instaCmaker — 엉클비 캐러셀 스튜디오
 
+> ⚠️ **이전 안내 (2026-06):** 이 스튜디오는 **unclebstudio 모노레포로 이식**되어
+> **`unclebstudio.com/instaCmaker`** 에서 서비스됩니다. 신규 개발(Supabase 클라우드 저장,
+> 도메인 전역 구글 로그인, Storage 이미지 분리)은 `uncleB-dev/unclebstudio` 레포의
+> `app/instaCmaker/`에서 진행합니다. 이 레포는 원본 클라이언트 전용 버전 보존용입니다.
+
+
 캔바/미리캔버스식 **요소(레이어) 기반** 인스타그램 캐러셀 편집기.
 주제 → (생성기로) 요소 JSON → 스튜디오에서 자유 편집 → **1080×1350 PNG / ZIP** 내보내기.
 
